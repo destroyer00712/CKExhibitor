@@ -1,7 +1,9 @@
+import 'package:ckexhibitor/contactTable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class QRCodeScannerScreen extends StatefulWidget {
   const QRCodeScannerScreen({super.key});
@@ -136,19 +138,27 @@ class _QRCodeScannerScreenState extends State<QRCodeScannerScreen> {
                 child: AlertDialog(
                   title: Text("Scan Result"),
                   content: SizedBox(
-                      height: 140,
+                      height: 150,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(result!.code.toString()),
                           ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
+                            onPressed: () async {
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              prefs.setString(
+                                  'visitorData', result!.code.toString());
+                              _controller?.stopCamera();
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ContactTable()));
                             },
-                            child: Text("Close"),
+                            child: Text("Next"),
                             style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Color.fromRGBO(42, 75, 157, 1)),
+                              backgroundColor: Color.fromRGBO(42, 75, 157, 1),
+                            ),
                           ),
                         ],
                       )),
